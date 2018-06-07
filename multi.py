@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# _*_ coding:utf-8 _*_
 """ 计算社保和个人所得税
 
 步骤：[(解析参数 (Args)-> 读取社保配置文件 (ShebaoConfig)-> 读取员工数据 (EmployeeData)] Process1
@@ -33,7 +35,6 @@ class ArgError(Exception):
 class Args:
     """命令行参数解析类
     """
-
     def __init__(self, args):
         """
         Args:
@@ -198,7 +199,7 @@ class Calculator(Process):
         while True:
             try:
                 data_item = q_user.get(timeout=1) #timeout 1 second 為 empty queue 時確認 Queue真為空
-            except Queue.Empty:
+            except:
                 break #Queue 為空退出 Process
         for data in self.calculate(data_item):
             q_result.put(data)
@@ -228,7 +229,7 @@ class Exporter(Process):
                     for item in data:
                         line = ','.join(item) + '\n'
                         content += line
-                except Queue.Empty:
+                except:
                     break
             # 写入文件
             f.write(content)
