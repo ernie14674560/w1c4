@@ -112,8 +112,8 @@ class EmployeeData(Process):
         data = []
         for line in open(file):
             employee_id, gongzi = line.split(',')
-            data = (employee_id, gongzi)
-        yield data # 節省內存
+            data = (employee_id, float(gongzi))
+            yield data # 節省內存
 
 
     def run(self):  # 繼承自 Process
@@ -191,8 +191,8 @@ class Calculator(Process):
         # 最终工资 = 工资 - 社保 - 个人所得税
         last_gongzi = left_gongzi - tax
 
-        yield [str(employee_id), str(gongzi), '{:.2f}'.format(shebao), '{:.2f}'.format(tax), '{:.2f}'.format(
-            last_gongzi)]
+        yield str(employee_id), str(gongzi), '{:.2f}'.format(shebao), '{:.2f}'.format(tax), '{:.2f}'.format(
+            last_gongzi)
 
 
     def run(self):
@@ -201,8 +201,8 @@ class Calculator(Process):
                 data_item = q_user.get(timeout=1) #timeout 1 second 為 empty queue 時確認 Queue真為空
             except:
                 break #Queue 為空退出 Process
-        for data in self.calculate(data_item):
-            q_result.put(data)
+            for data in self.calculate(data_item):
+                q_result.put(data)
 
 class Exporter(Process):
     """导出类实现
@@ -226,9 +226,8 @@ class Exporter(Process):
             while True:
                 try:
                     data = q_result.get(timeout=1)
-                    for item in data:
-                        line = ','.join(item) + '\n'
-                        content += line
+                    line = ','.join(data) + '\n'
+                    content += line
                 except:
                     break
             # 写入文件
